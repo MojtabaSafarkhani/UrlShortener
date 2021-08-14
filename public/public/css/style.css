@@ -1,0 +1,16 @@
+@font-face {
+font-family: myfont ;
+    src: url("../fonts/ComicSansMS-BoldItalic.woff");
+    src: url("../fonts/ComicSansMS-BoldItalic.woff2");
+}
+
+*{
+    font-family: myfont;
+
+}
+
+
+.row{
+    min-height: 600px;
+    height: auto;
+}
