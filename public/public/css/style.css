@@ -14,3 +14,13 @@ font-family: myfont ;
     min-height: 600px;
     height: auto;
 }
+
+table td{
+    max-width: 85px;
+    table-layout: fixed;
+    word-wrap: break-word;
+
+}
+#left-side{
+    float: left;!important;
+}

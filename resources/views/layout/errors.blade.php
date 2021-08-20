@@ -1,9 +1,11 @@
 @if($errors)
-    <ul>
+    <ul  class="bg-danger">
         @foreach($errors->all() as $error)
-            <li>
-                {{$error}}
-            </li>
+
+               <li>
+                   {{$error}}
+               </li>
+
         @endforeach
     </ul>
 

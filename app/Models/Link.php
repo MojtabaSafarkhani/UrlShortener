@@ -8,9 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Link extends Model
 {
     use HasFactory;
+
     protected $guarded=[];
+
     public function getRouteKeyName()
     {
-        return 'UrlShortener';
+        return 'slug';
     }
+
+
 }

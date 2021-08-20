@@ -15,19 +15,40 @@
     <a class="navbar-brand" href="{{route('welcome')}}">Url Shortener</a>
     <!-- Links -->
     <ul class="navbar-nav">
-        <li class="nav-item">
-            <a class="nav-link" href="{{route('links.index')}}">List</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{route('links.create')}}">create</a>
-        </li>
+        @guest
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('user.create')}}">signIn</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('user.login')}}">logIn</a>
+            </li>
+
+        @endguest
+        @auth()
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('links.index')}}">List</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('links.create')}}">create</a>
+            </li>
+            <li class="nav-item">
+                <form method="post" action="{{route('user.logout')}}">
+                    @csrf
+                    @method("DELETE")
+                    <input type="submit" value="logout" class="btn btn-danger">
+                </form>
+            </li>
+            <li class="nav-item ms-1">
+                <a class="btn btn-success" href="{{route('profile.index')}}">profile</a>
+            </li>
+        @endauth
     </ul>
 
 </nav>
 <div class="container-fluid bg-warning mw-100 mh-100 p-3 ">
 
     <div class="row">
-@yield('content')
+        @yield('content')
     </div>
 
 </div>
@@ -38,8 +59,8 @@
 </footer>
 <script src="/public/js/bootstrap.min.js"></script>
 <script>
-    function copy(linkid){
-        var copyText = document.getElementById("copyInput"+linkid);
+    function copy(linkid) {
+        var copyText = document.getElementById("copyInput" + linkid);
         copyText.select();
         document.execCommand("copy")
     }

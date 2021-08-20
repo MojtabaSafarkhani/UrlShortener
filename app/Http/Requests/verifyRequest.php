@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UrlStoreRequest extends FormRequest
+class verifyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class UrlStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return auth()->check();
     }
 
     /**
@@ -24,7 +24,7 @@ class UrlStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'url'=>['required','url']
+           'code'=>['required','numeric','gte:1111','lte:9999']
         ];
     }
 }
