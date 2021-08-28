@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\AuthenticationController;
-use App\Http\Controllers\forgetpasswordController;
+use App\Http\Controllers\ForgetPasswordController;
 use App\Http\Controllers\LinksController;
-use App\Http\Controllers\profilesController;
-
+use App\Http\Controllers\ProfilesController;
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\VerificationEmailController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,29 +22,21 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');/*Welcome Page*/
+Route::middleware('guest')->group(function () {
 
-Route::middleware(['guest'])->group(function () {
-    Route::get('/authentication/login', [AuthenticationController::class, 'user_login'])->name('user.login');/*login page*/
-    Route::get('/forgetpassword/create', [forgetpasswordController::class, 'create'])->name('forget.create');/*forget password page*/
-    Route::post('/forgetpassword/check', [forgetpasswordController::class, 'check'])->name('forget.check');/*forget password check email and send email*/
-    Route::get('/forgetpassword/changepassword/{user}/', [forgetpasswordController::class, 'change_password'])->name('change.password');/*enter code from your email page*/
-    Route::post('/forgetpassword/changepassword/{user}', [forgetpasswordController::class, 'login_with_forget_password'])->name('login.with.forget.password');/*store new password for forget password*/
-    Route::post('/authentication/login', [AuthenticationController::class, 'user_check_login'])->name('user.check.login');/*check email and password for login*/
-    Route::get('/authentication/signin', [AuthenticationController::class, 'user_create'])->name('user.create');/*user sign_in page*/
-});
-
-
-Route::post('/authentication/signin', [AuthenticationController::class, 'user_store'])->name('user.store');/*user sign_in store*/
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/authentication/verifyemail/', [AuthenticationController::class, 'verifyemail'])->name('user.verifyemail');/*verify email page*/
-    Route::post('/authentication/verifyemail/', [AuthenticationController::class, 'verifyemail_store'])->name('user.verifyemail.store');/*verify email Comparison code*/
-    Route::delete('/authentication/logout/', [AuthenticationController::class, 'logout'])->name('user.logout');/*user logout*/
-    Route::get('/authentication/logout/');/* forbidden for Route::get logout*/
+    Route::get('/register', [RegisterController::class, 'create'])->name('register.create');
+    Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
+    Route::get('/login', [AuthenticationController::class, 'create'])->name('login.create');
+    Route::post('/login', [AuthenticationController::class, 'store'])->name('login.store');
+    Route::get('/forget', [ForgetPasswordController::class, 'create'])->name('forget.create');
+    Route::post('/forget', [ForgetPasswordController::class, 'store'])->name('forget.store');
+    Route::get('/reset/{token}', [ForgetPasswordController::class, 'reSetPassword'])->name('reset.password.create');
+    Route::post('/reset/{token}', [ForgetPasswordController::class, 'reSetPasswordStore'])->name('reset.password.store');
 
 });
 
-Route::resource('/profile', profilesController::class);/*user profile*/
+
+Route::delete('/logout', [AuthenticationController::class, 'destroy'])->name('login.destroy');
 
 
 Route::get('/links/create', [LinksController::class, 'create'])->name('links.create');/*create a new short link*/
@@ -52,8 +45,16 @@ Route::get('/links/', [LinksController::class, 'index'])->name('links.index');/*
 Route::delete('/links/{link}', [LinksController::class, 'destroy'])->name('links.destroy');/*delete link*/
 Route::get('/{link}', [LinksController::class, 'handle'])->name('links.handle');/*redirect to user's link*/
 
+/*verify email*/
+Route::get('/verify/email', [VerificationEmailController::class, 'show'])->middleware('auth')->name('verification.notice');
+Route::get('/verify/email/{id}/{hash}', [VerificationEmailController::class, 'verify'])->middleware(['auth', 'signed'])->name('verification.verify');
+Route::post('/verify/email/verification-notification', [VerificationEmailController::class, 'notify'])->middleware(['auth'])->name('verification.send');
+/*end verify email*/
 
-
-
+/*user profile */
+Route::get('/profile/{user}', [ProfilesController::class, 'show'])->name('profile.show');
+Route::get('/profile/{user}/edit', [ProfilesController::class, 'edit'])->name('profile.edit');
+Route::patch('/profile/', [ProfilesController::class, 'update'])->name('profile.update');
+/*user profile end*/
 
 

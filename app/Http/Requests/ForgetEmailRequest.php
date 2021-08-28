@@ -3,9 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use phpDocumentor\Reflection\Types\True_;
 
-class SigninRequest extends FormRequest
+class ForgetEmailRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +13,7 @@ class SigninRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return !auth()->check();
     }
 
     /**
@@ -25,8 +24,7 @@ class SigninRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => ['required', 'unique:users,email'],
-            'password' => ['required', 'confirmed'],
+            'email' => ['required', 'email', 'exists:users,email', 'unique:password_resets,email']
         ];
     }
 }

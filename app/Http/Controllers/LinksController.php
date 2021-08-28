@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Middleware\verfyemailMiddleware;
-use App\Http\Requests\UrlStoreRequest;
+
+use App\Http\Requests\UrlRequest;
 use App\Models\Link;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -14,8 +14,9 @@ class LinksController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth',verfyemailMiddleware::class]);
+        $this->middleware(['auth','verified']);
     }
+
 
     public function index()
     {
@@ -29,7 +30,7 @@ class LinksController extends Controller
         return view('links.create');
     }
 
-    public function store(UrlStoreRequest $request)
+    public function store(UrlRequest $request)
 
     {
         $slug = Str::random(4);
@@ -42,12 +43,15 @@ class LinksController extends Controller
             return redirect()->back()->withErrors(['wrong' => 'something is wrong please try again!']);
 
         } else {
-            Link::query()->create([
+            $link = new Link();
 
-                'url' => $request->get('url'),
-                'slug' => $slug,
-                'user_id' => auth()->id(),
-            ]);
+            $link->url = $request->get('url');
+
+            $link->slug = $slug;
+
+            $link->user_id = auth()->id();
+
+            $link->save();
 
             return redirect(route('links.index'));
         }

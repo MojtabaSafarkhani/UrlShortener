@@ -17,10 +17,10 @@
     <ul class="navbar-nav">
         @guest
             <li class="nav-item">
-                <a class="nav-link" href="{{route('user.create')}}">signIn</a>
+                <a class="nav-link" href="{{route('register.create')}}">Register</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('user.login')}}">logIn</a>
+                <a class="nav-link" href="{{route('login.create')}}">LogIn</a>
             </li>
 
         @endguest
@@ -29,17 +29,17 @@
                 <a class="nav-link" href="{{route('links.index')}}">List</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{route('links.create')}}">create</a>
+                <a class="nav-link" href="{{route('links.create')}}">Create</a>
             </li>
             <li class="nav-item">
-                <form method="post" action="{{route('user.logout')}}">
+                <form method="post" action="{{route('login.destroy')}}">
                     @csrf
                     @method("DELETE")
-                    <input type="submit" value="logout" class="btn btn-danger">
+                    <input type="submit" value="Logout" class="btn btn-danger">
                 </form>
             </li>
             <li class="nav-item ms-1">
-                <a class="btn btn-success" href="{{route('profile.index')}}">profile</a>
+                <a class="btn btn-success" href="{{route('profile.show',auth()->user())}}">Profile</a>
             </li>
         @endauth
     </ul>

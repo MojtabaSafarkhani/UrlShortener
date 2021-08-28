@@ -4,20 +4,17 @@
 @section('content')
 
 
-    <form action="{{route('login.with.forget.password',$user)}}" method="post" class="col-md-4 m-auto">
+    <form action="{{route('forget.store')}}" method="post" class="col-md-4 m-auto">
         @csrf
-
         <div class="alert alert-secondary text-center">
-            welcome to your website<br>
-            your email: {{$user->email}}
+            welcome to your website
         </div>
         <div class="input-group mb-3">
-            <input type="password" name="password" class="form-control" placeholder="enter password">
+            <input type="email" name="email" class="form-control" placeholder="Enter your email">
         </div>
         <div class="input-group mb-3">
             <input type="submit" class="form-control btn btn-dark" value="submit">
         </div>
-
         @include('layout.errors')
     </form>
 

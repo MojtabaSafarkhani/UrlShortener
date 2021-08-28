@@ -4,10 +4,13 @@
 @section('content')
 
 
-    <form action="{{route('user.store')}}" method="post" class="col-md-4 m-auto">
+    <form action="{{route('register.store')}}" method="post" class="col-md-4 m-auto">
         @csrf
         <div class="alert alert-secondary text-center">
             welcome to your website
+        </div>
+        <div class="input-group mb-3">
+            <input type="text" name="name" class="form-control" placeholder="Enter your name">
         </div>
         <div class="input-group mb-3">
             <input type="email" name="email" class="form-control" placeholder="Enter your email">

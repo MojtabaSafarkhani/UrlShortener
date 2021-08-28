@@ -3,112 +3,53 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
-use App\Http\Requests\SigninRequest;
-use App\Http\Requests\verifyRequest;
-use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Auth;
+use phpDocumentor\Reflection\Types\True_;
 
 class AuthenticationController extends Controller
 {
-    public function user_create()
+    public function __construct()
     {
-
-        return view('authentication.signin');
-    }
-
-    public function user_store(SigninRequest $request)
-    {
-
-        $user = User::query()->create([
-
-            'email' => $request->get('email'),
-            'password' => bcrypt($request->get('password')),
-        ]);
-
-        auth()->login($user);
-
-        return redirect(route('user.verifyemail'));
-    }
-
-    public function verifyemail()
-    {
-
-        return view('authentication.verifyemail');
+        $this->middleware('auth')->only('destroy');
 
     }
 
+    public function create()
+    {
+        return view('authentication.create');
+    }
 
-    public function verifyemail_store(verifyRequest $request)
+    public function store(LoginRequest $request)
     {
 
-        $code = session()->get('code');/*get code from session where in UserObserver the code created */
+        $remember = $request->has('remember_me');
 
-        if (Hash::check($request->get('code'), $code)) {
+        if (Auth::attempt(['email' => $request->get('email'),
+            'password' => $request->get('password')], $remember)) {
 
             $user = auth()->user();
 
-            $user->update([
-
-                'email' => $user->email,
-                'password' => $user->password,
-                'email_verified_at' => Carbon::now('Asia/Tehran'),
-            ]);
-
-            return redirect(route('welcome'));
-
-        } else {
-
-            return redirect()->back()->withErrors(['wrong' => 'the code is wrong']);
-        }
-    }
-
-
-    public function user_login()
-    {
-        return view('authentication.login');
-    }
-
-    public function user_check_login(LoginRequest $request)
-    {
-
-        $user = User::query()->where('email', $request->get('email'))->first();
-
-        if (!Hash::check($request->get('password'), $user->password)) {
-
-            return redirect()->back()->withErrors(['error' => 'email or password is wrong']);
-
-        } else {
-
-            if ($request->has('remember_me')) {
-
-                Cookie::queue('email', $request->get('email'), 86400);
-
-                Cookie::queue('password', $request->get('password'), 86400);
-            } else {
-
-                Cookie::queue('email', '');
-
-                Cookie::queue('password', '');
-            }
-
             auth()->login($user);
 
-            session()->flash('success', 'login successfully');
+            if (!$user->hasVerifiedEmail()) {
 
-            return redirect(route('welcome'));
+                return redirect(route('verification.notice'));
+
+            } else {
+
+                return redirect(route('welcome'));
+            }
+        } else {
+
+            return redirect()->back()->withErrors(['error' => 'email or password is wrong']);
         }
     }
 
-    public function logout()
+    public function destroy()
     {
         auth()->logout();
 
         return redirect(route('welcome'));
     }
-
-
 }

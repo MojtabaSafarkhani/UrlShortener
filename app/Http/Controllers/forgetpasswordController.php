@@ -2,86 +2,68 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\checkEmailRequest;
-use App\Http\Requests\save_passwordRequest;
-use App\Mail\forgetpassword;
+use App\Http\Requests\ForgetEmailRequest;
+use App\Http\Requests\ResetPasswordRequest;
+use App\Mail\ForgetPasswordMail;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
-use phpDocumentor\Reflection\Types\Self_;
 
-class forgetpasswordController extends Controller
+class ForgetPasswordController extends Controller
 {
-
-
     public function create()
     {
-        return view('forgetpassword.create');
+        return view('forget-password.create');
     }
 
-    public function check(checkEmailRequest $request)
+    public function store(ForgetEmailRequest $request)
     {
-        $user = User::query()->where('email', $request->get('email'))->first();
+        $email = $request->get('email');
 
-        if ($user->email_verified_at != null) /*just verified email can use forget password*/ {
+        $token = Str::random(64);
 
-            $code = random_int(1111, 9999);
+        DB::table('password_resets')->insert([
+            'email' => $email,
+            'token' => $token,
+            'created_at' => Carbon::now(),
+        ]);
 
-            $user->update([
+        Mail::to($email)->send(new ForgetPasswordMail($token));
 
-                    'email' => $user->email,
-                    'email_verified_at' => $user->email_verified_at,
-                    'password' => bcrypt($code)]
-            );
-            $valid_email = Str::random(5);
-
-            session()->put(['valid_email' => $valid_email]);/*create session and check in change_password method for
-                                                                 sure  send an email */
-
-            Mail::to($user->email)->send(new forgetpassword($code));
-
-            return redirect()->route('change.password', $user);
-        } else {
-
-            return redirect()->back()->withErrors(['wrong' => 'Your email is wrong or Your email not verified']);
-        }
+        return redirect()->back()->withErrors(['successful' => 'check your email and click on link']);
     }
 
-    public function change_password(User $user)
+    public function reSetPassword($token)
     {
-
-        if (session()->has('valid_email')) {
-
-            return view('forgetpassword.change_password', [
-                'user' => $user,
-            ]);
-
-        } else {
-
-            return redirect(route('forget.create'))->withErrors(['wrong' => 'your action is invalid']);
-        }
-
+        return view('forget-password.reset', [
+            'token' => $token,
+        ]);
     }
 
-    public function login_with_forget_password(save_passwordRequest $request, User $user)
+    public function reSetPasswordStore(ResetPasswordRequest $request, $token)
     {
+        $email = $request->get('email');
 
+        $is_email_exists = DB::table('password_resets')->where([
+            'email' => $email,
+            'token' => $token,
+        ])->exists();
 
-        if (!Hash::check($request->get('password'), $user->password)) {
+        if (!$is_email_exists) {
 
-            return redirect()->back()->withErrors(['error' => 'your code is wrong']);
+            return redirect()->back()->withErrors(['errors' => 'something is wrong']);
 
         } else {
 
-            auth()->login($user);
+            User::where('email', $email)->update(['password' => Hash::make($request->get('password'))]);
 
-            session()->remove('valid_email');
+            DB::table('password_resets')->where('email', $email)->delete();
 
-            session()->flash('success', 'login successfully');
-
-            return redirect(route('welcome'));
+            return redirect(route('login.create'));
         }
 
 

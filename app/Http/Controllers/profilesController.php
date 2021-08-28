@@ -2,50 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Middleware\verfyemailMiddleware;
-use App\Http\Requests\updateprofileRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use App\Models\User;
-
+use Carbon\Carbon;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 
-
-class profilesController extends Controller
+class ProfilesController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', verfyemailMiddleware::class]);
+        $this->middleware(['auth']);
     }
 
-    public function index()
+    public function show(User $user)
     {
-        return view('profiles.index', [
-            'user' => auth()->user(),
+        return view('profile.show', [
+            'user' => $user,
         ]);
     }
 
-    public function edit()
+    public function edit(User $user)
     {
-
-        return view('profiles.edit', [
-            'user' => auth()->user(),
-
+        return view('profile.edit', [
+            'user' => $user,
         ]);
     }
 
-    public function update(updateprofileRequest $request)
+    public function update(UpdateProfileRequest $request)
     {
+        $email_at_db = auth()->user()->email;
 
-        auth()->user()->update([
+        $email = $request->get('email');
 
-            'email' => auth()->user()->email,
-            'name' => $request->get('name'),
-            'password' => bcrypt($request->get('password')),
-            'email_verified_at' => auth()->user()->email_verified_at,
+        $is_email_used = User::where('email', $email)
+            ->where('id', '!=', auth()->id())->exists();
 
-        ]);
+        if (!$is_email_used) {
 
-        return redirect(route('profile.index'));
+            auth()->user()->update([
 
+                'name' => $request->get('name'),
+                'email' => $email,
+                'password' => Hash::make($request->get('password')),
+                'email_verified_at' => $this->checkVerify($email_at_db, $email),
+            ]);
+
+            if ($this->checkVerify($email_at_db, $email) == null) {
+
+                event(new Registered(auth()->user()));
+
+                return redirect(route('verification.notice'));
+            }
+
+            return redirect(route('profile.show', auth()->user()));
+
+        } else {
+            return redirect()->back()->withErrors(['error' => 'email must be unique']);
+        }
+
+    }
+
+    public function checkVerify($email_at_db, $email)
+    {
+        return ($email_at_db != $email) ? NULL : auth()->user()->email_verified_at;
     }
 }

@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use phpDocumentor\Reflection\Types\True_;
 
-class save_passwordRequest extends FormRequest
+class urlRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +25,7 @@ class save_passwordRequest extends FormRequest
     public function rules()
     {
         return [
-            'password' => ['required', 'numeric', 'gte:1111', 'lte:9999']
+            'url' => ['required', 'url']
         ];
     }
 }
