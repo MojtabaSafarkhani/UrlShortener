@@ -6,6 +6,8 @@ use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use phpDocumentor\Reflection\Types\True_;
+use function PHPUnit\Framework\isEmpty;
+use function PHPUnit\Framework\isNull;
 
 class AuthenticationController extends Controller
 {
@@ -19,6 +21,7 @@ class AuthenticationController extends Controller
     {
         return view('authentication.create');
     }
+
 
     public function store(LoginRequest $request)
     {
@@ -36,9 +39,10 @@ class AuthenticationController extends Controller
 
                 return redirect(route('verification.notice'));
 
-            } else {
 
+            } else {
                 return redirect(route('welcome'));
+
             }
         } else {
 
@@ -50,6 +54,6 @@ class AuthenticationController extends Controller
     {
         auth()->logout();
 
-        return redirect(route('welcome'));
+        return redirect(route('login.create'));
     }
 }

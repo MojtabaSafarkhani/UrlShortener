@@ -37,31 +37,25 @@ class ProfilesController extends Controller
 
         $email = $request->get('email');
 
-        $is_email_used = User::where('email', $email)
-            ->where('id', '!=', auth()->id())->exists();
+        auth()->user()->update([
 
-        if (!$is_email_used) {
+            'name' => $request->get('name'),
+            'email' => $email,
+            'password' => Hash::make($request->get('password')),
+            'email_verified_at' => $this->checkVerify($email_at_db, $email),
+        ]);
 
-            auth()->user()->update([
+        if ($this->checkVerify($email_at_db, $email) == null) {
 
-                'name' => $request->get('name'),
-                'email' => $email,
-                'password' => Hash::make($request->get('password')),
-                'email_verified_at' => $this->checkVerify($email_at_db, $email),
-            ]);
+            event(new Registered(auth()->user()));
 
-            if ($this->checkVerify($email_at_db, $email) == null) {
-
-                event(new Registered(auth()->user()));
-
-                return redirect(route('verification.notice'));
-            }
-
-            return redirect(route('profile.show', auth()->user()));
+            return redirect(route('verification.notice'));
 
         } else {
-            return redirect()->back()->withErrors(['error' => 'email must be unique']);
+
+            return redirect(route('profile.show', auth()->user()));
         }
+
 
     }
 

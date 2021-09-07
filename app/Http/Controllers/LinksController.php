@@ -37,10 +37,9 @@ class LinksController extends Controller
 
         $is_slug_used = Link::query()->where('slug', $slug)->exists();
 
-
         if ($is_slug_used) {
 
-            return redirect()->back()->withErrors(['wrong' => 'something is wrong please try again!']);
+            return redirect()->back()->with(['wrong' => 'something is wrong please try again!']);
 
         } else {
             $link = new Link();

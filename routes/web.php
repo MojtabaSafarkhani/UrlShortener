@@ -35,7 +35,6 @@ Route::middleware('guest')->group(function () {
 
 });
 
-
 Route::delete('/logout', [AuthenticationController::class, 'destroy'])->name('login.destroy');
 
 

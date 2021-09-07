@@ -59,7 +59,7 @@ class ForgetPasswordController extends Controller
 
         } else {
 
-            User::where('email', $email)->update(['password' => Hash::make($request->get('password'))]);
+            User::query()->where('email', $email)->update(['password' => Hash::make($request->get('password'))]);
 
             DB::table('password_resets')->where('email', $email)->delete();
 

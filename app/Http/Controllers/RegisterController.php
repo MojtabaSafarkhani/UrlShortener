@@ -17,6 +17,7 @@ class RegisterController extends Controller
 
     public function store(RegisterStoreRequest $request)
     {
+
         $user = new User();
 
         $user->name = $request->get('name');
