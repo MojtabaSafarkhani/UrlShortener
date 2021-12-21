@@ -34,7 +34,7 @@ class LinksController extends Controller
 
     {
         do {
-            $slug = 'aJ3O';
+            $slug = Str::random(64);
 
             $is_slug_used = Link::query()->where('slug', $slug)->exists();
 
