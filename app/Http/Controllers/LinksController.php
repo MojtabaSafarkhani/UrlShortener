@@ -14,7 +14,7 @@ class LinksController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth','verified']);
+        $this->middleware(['auth', 'verified']);
     }
 
 
@@ -33,27 +33,26 @@ class LinksController extends Controller
     public function store(UrlRequest $request)
 
     {
-        $slug = Str::random(4);
+        do {
+            $slug = 'aJ3O';
 
-        $is_slug_used = Link::query()->where('slug', $slug)->exists();
+            $is_slug_used = Link::query()->where('slug', $slug)->exists();
 
-        if ($is_slug_used) {
 
-            return redirect()->back()->with(['wrong' => 'something is wrong please try again!']);
+        } while ($is_slug_used);
 
-        } else {
-            $link = new Link();
 
-            $link->url = $request->get('url');
+        $link = new Link();
 
-            $link->slug = $slug;
+        $link->url = $request->get('url');
 
-            $link->user_id = auth()->id();
+        $link->slug = $slug;
 
-            $link->save();
+        $link->user_id = auth()->id();
 
-            return redirect(route('links.index'));
-        }
+        $link->save();
+
+        return redirect(route('links.index'));
 
 
     }
