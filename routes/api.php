@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\LinksController;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\RegisterController;
 use Illuminate\Http\Request;
@@ -26,9 +27,9 @@ Route::post('/login', [LoginController::class, 'store']);
 Route::middleware('auth:api')->group(function () {
 
     Route::delete('/logout', [LoginController::class, 'destroy']);
+    Route::get('/links',[LinksController::class,'index']);
 
 });
-
 
 
 

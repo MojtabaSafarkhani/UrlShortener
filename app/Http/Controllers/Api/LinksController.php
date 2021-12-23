@@ -7,5 +7,12 @@ use Illuminate\Http\Request;
 
 class LinksController extends Controller
 {
-    //
+    public function index()
+    {
+        return response()->json([
+            'data' => [
+                'links' => auth('api')->user()->links
+            ]
+        ]);
+    }
 }
