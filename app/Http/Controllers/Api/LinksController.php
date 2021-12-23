@@ -66,4 +66,9 @@ class LinksController extends Controller
             ]
         ]);
     }
+
+    public function handle(Link $link)
+    {
+        return redirect($link->url);
+    }
 }
