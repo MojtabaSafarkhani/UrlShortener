@@ -52,4 +52,18 @@ class LinksController extends Controller
         ]);
 
     }
+
+    public function destroy(Link $link)
+    {
+        $link->delete();
+
+        return response()->json([
+
+            'data' => [
+
+                'message' => 'deleted successfully'
+
+            ]
+        ]);
+    }
 }
