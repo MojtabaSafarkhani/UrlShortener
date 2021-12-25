@@ -28,12 +28,12 @@ Route::post('/login', [LoginController::class, 'store']);
 Route::middleware('auth:api')->group(function () {
 
     Route::delete('/logout', [LoginController::class, 'destroy']);
-    Route::get('/links',[LinksController::class,'index']);
-    Route::post('/links',[LinksController::class,'store']);
-    Route::get('/{link}',[LinksController::class,'handle']);
-    Route::delete('/links/{link}',[LinksController::class,'destroy']);
-    Route::get('/profile/show',[ProfileController::class,'show']);
-
+    Route::get('/links', [LinksController::class, 'index']);
+    Route::post('/links', [LinksController::class, 'store']);
+    Route::get('/{link}', [LinksController::class, 'handle']);
+    Route::delete('/links/{link}', [LinksController::class, 'destroy']);
+    Route::get('/profile/show', [ProfileController::class, 'show']);
+    Route::patch('/profile/update', [ProfileController::class, 'update']);
 
 });
 
