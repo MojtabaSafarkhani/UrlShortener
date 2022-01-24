@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ForgetPasswordController;
 use App\Http\Controllers\Api\LinksController;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\ProfileController;
@@ -35,6 +36,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/profile/show', [ProfileController::class, 'show']);
     Route::patch('/profile/update', [ProfileController::class, 'update']);
 
+
 });
 
+Route::post('/forget', [ForgetPasswordController::class, 'store']);
 
