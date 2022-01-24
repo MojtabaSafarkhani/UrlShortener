@@ -40,4 +40,4 @@ Route::middleware('auth:api')->group(function () {
 });
 
 Route::post('/forget', [ForgetPasswordController::class, 'store']);
-
+Route::post('/reset', [ForgetPasswordController::class, 'passwordReset']);
